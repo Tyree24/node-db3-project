@@ -16,8 +16,43 @@ function findSteps(id) {
     .orderBy('steps.step_number');
 };
 
+function add(schemeData) {
+  return db('schemes').insert(schemeData)
+    .then(idArray => {
+      return db('schemes').where({ id: idArray[0] }).first();
+    })
+};
+
+function update(changes, id) {
+  return db('schemes').where({ id }).update(changes)
+    .then(count => {
+      return db('schemes').where({ id }).first();
+    });
+};
+
+function remove(id) {
+  return db('schemes').where({ id }).first()
+    .then(schemeToRemove => {
+      return db('schemes').where({ id }).del()
+        .then(count => {
+          return schemeToRemove;
+        })
+    })
+    .catch(err => {
+      if (!id) {
+        return null;
+      } else {
+        return err;
+      };
+    });
+}
+
+
 module.exports = {
   find,
   findById,
-  findSteps
+  findSteps,
+  add,
+  update,
+  remove
 }
